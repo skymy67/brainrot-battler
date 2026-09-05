@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { MAP_COLS, MAP_ROWS, TILE_SIZE } from './map/mapData.js';
 import BootScene from './scenes/BootScene.js';
+import StarterSelectScene from './scenes/StarterSelectScene.js';
 import OverworldScene from './scenes/OverworldScene.js';
 import BattleScene from './scenes/BattleScene.js';
 
@@ -11,5 +12,5 @@ new Phaser.Game({
   height: MAP_ROWS * TILE_SIZE,
   pixelArt: true,
   backgroundColor: '#10131c',
-  scene: [BootScene, OverworldScene, BattleScene],
+  scene: [BootScene, StarterSelectScene, OverworldScene, BattleScene],
 });

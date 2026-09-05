@@ -1,13 +1,9 @@
 import Phaser from 'phaser';
 import characters from '../data/characters.json';
 import { MAP_LAYOUT, MAP_COLS, MAP_ROWS, TILE_SIZE, PLAYER_START, tileAt } from '../map/mapData.js';
+import { STARTER_LEVEL } from '../systems/leveling.js';
 
 const MOVE_DURATION = 140;
-
-// Which roster character the player controls in battle. There's no
-// starter-select flow yet, so this is a fixed default for the scaffold.
-const PLAYER_CHARACTER_ID = 'apipipi';
-const STARTER_LEVEL = 5;
 
 export default class OverworldScene extends Phaser.Scene {
   constructor() {
@@ -15,6 +11,11 @@ export default class OverworldScene extends Phaser.Scene {
   }
 
   init(data) {
+    // playerCharacterId/playerLevel normally come from StarterSelectScene (or
+    // are carried through from a battle's returnData). The fallback to the
+    // first roster entry only matters if this scene is ever started directly.
+    this.playerCharacterId = data?.playerCharacterId ?? characters[0].id;
+    this.playerLevel = data?.playerLevel ?? STARTER_LEVEL;
     this.startCol = data?.col ?? PLAYER_START.col;
     this.startRow = data?.row ?? PLAYER_START.row;
   }
@@ -22,10 +23,12 @@ export default class OverworldScene extends Phaser.Scene {
   create() {
     this.renderMap();
 
+    const playerData = characters.find((c) => c.id === this.playerCharacterId);
     this.playerCol = this.startCol;
     this.playerRow = this.startRow;
     this.player = this.add
-      .image(this.colToX(this.playerCol), this.rowToY(this.playerRow), 'player')
+      .image(this.colToX(this.playerCol), this.rowToY(this.playerRow), playerData.spriteKey)
+      .setDisplaySize(TILE_SIZE - 8, TILE_SIZE - 8)
       .setDepth(10);
 
     this.isMoving = false;
@@ -98,15 +101,20 @@ export default class OverworldScene extends Phaser.Scene {
   checkForEncounter(tile) {
     if (tile.encounterChance <= 0 || Math.random() >= tile.encounterChance) return;
 
-    const wildPool = characters.filter((c) => c.id !== PLAYER_CHARACTER_ID);
+    const wildPool = characters.filter((c) => c.id !== this.playerCharacterId);
     const wild = Phaser.Utils.Array.GetRandom(wildPool.length ? wildPool : characters);
 
     this.scene.start('Battle', {
-      playerCharacterId: PLAYER_CHARACTER_ID,
-      playerLevel: STARTER_LEVEL,
+      playerCharacterId: this.playerCharacterId,
+      playerLevel: this.playerLevel,
       enemyCharacterId: wild.id,
-      enemyLevel: STARTER_LEVEL,
-      returnPosition: { col: this.playerCol, row: this.playerRow },
+      enemyLevel: this.playerLevel,
+      returnData: {
+        col: this.playerCol,
+        row: this.playerRow,
+        playerCharacterId: this.playerCharacterId,
+        playerLevel: this.playerLevel,
+      },
     });
   }
 }

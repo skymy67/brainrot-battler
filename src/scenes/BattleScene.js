@@ -21,7 +21,7 @@ export default class BattleScene extends Phaser.Scene {
   create() {
     this.playerChar = new Character(CHARACTERS_BY_ID[this.battleData.playerCharacterId], this.battleData.playerLevel);
     this.enemyChar = new Character(CHARACTERS_BY_ID[this.battleData.enemyCharacterId], this.battleData.enemyLevel);
-    this.returnPosition = this.battleData.returnPosition;
+    this.returnData = this.battleData.returnData;
     this.turnLocked = false;
     this.battleOver = false;
     this.logLines = [];
@@ -184,7 +184,7 @@ export default class BattleScene extends Phaser.Scene {
     this.log(playerWon ? `${this.enemyChar.data.name} fainted! You won!` : `${this.playerChar.data.name} fainted... You blacked out.`);
     this.add.text(320, 300, 'Click anywhere to continue', { fontSize: '14px', color: '#ffffff' }).setOrigin(0.5).setDepth(30);
     this.input.once('pointerdown', () => {
-      this.scene.start('Overworld', this.returnPosition);
+      this.scene.start('Overworld', this.returnData);
     });
   }
 

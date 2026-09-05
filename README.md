@@ -13,9 +13,9 @@ npm install
 npm run dev
 ```
 
-Open the printed local URL. Move with **arrow keys or WASD**. Walking into
-darker "tall grass" or purple "cosmic field" tiles has a chance to trigger a
-random battle.
+Open the printed local URL. Pick a starter on the first screen, then move with
+**arrow keys or WASD**. Walking into darker "tall grass" or purple "cosmic
+field" tiles has a chance to trigger a random battle.
 
 `npm run build` produces a static production build in `dist/`.
 
@@ -25,7 +25,8 @@ random battle.
 src/
   main.js               Phaser game config, scene list
   scenes/
-    BootScene.js         Generates placeholder textures, then starts the overworld
+    BootScene.js         Generates placeholder textures, then starts starter select
+    StarterSelectScene.js Pick one of the three starters before entering the map
     OverworldScene.js     Tile map rendering, player movement, encounter checks
     BattleScene.js         Turn-based battle UI (HP bars, move menu, log)
   data/
@@ -53,12 +54,13 @@ effects (stat changes, confuse, etc.) use the `effects` array — see
 
 ## Swapping in real pixel art
 
-All sprites — the player, the three starters, and every tile — are placeholder
-colored squares generated at runtime from `src/systems/placeholderSprites.js`,
-keyed by the same string a real asset would use (tile type name, `'player'`,
-or a character's `spriteKey`). To use real art, load an image/spritesheet
-under that same key in a scene's `preload()` instead of calling the generator
-— nothing that *renders* the texture needs to change.
+All sprites — the three starters and every tile — are placeholder colored
+squares generated at runtime from `src/systems/placeholderSprites.js`, keyed
+by the same string a real asset would use (a tile type name, or a character's
+`spriteKey`). The overworld avatar reuses the chosen starter's own texture.
+To use real art, load an image/spritesheet under that same key in a scene's
+`preload()` instead of calling the generator — nothing that *renders* the
+texture needs to change.
 
 ## Leveling
 
@@ -96,9 +98,6 @@ a reasonable default — flagged here so they're easy to find and change:
 - **"100% accuracy at full strength" (Apipipi's signature move):** interpreted
   as flavor text for a simple 100 power / 100% accuracy move, with no
   additional conditional mechanic attached.
-- **Default player battler:** the overworld player always battles as Apipipi
-  (`PLAYER_CHARACTER_ID` in `OverworldScene.js`) — there's no starter-select
-  screen yet.
 - **Wild encounters:** picked uniformly at random from the full roster
   (excluding the player's own character) whenever a tall-grass/cosmic tile
   triggers.
