@@ -20,6 +20,21 @@ to trigger a random battle.
 
 `npm run build` produces a static production build in `dist/`.
 
+## Deployment (GitHub Pages)
+
+Every push to `main` runs `.github/workflows/deploy.yml`, which builds the
+project and publishes `dist/` to the `gh-pages` branch (created automatically
+on first run).
+
+One-time setup: in the repo's **Settings → Pages**, set **Source** to
+"Deploy from a branch" and pick the `gh-pages` branch, `/ (root)` folder. The
+site will then be live at `https://skymy67.github.io/brainrot-battler/` and
+auto-update a minute or two after every push to `main`.
+
+`vite.config.js` already uses `base: './'` (relative asset paths), which
+works correctly under a project-page subpath like `/brainrot-battler/` — no
+further path configuration is needed.
+
 ## Project structure
 
 ```
