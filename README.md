@@ -13,9 +13,10 @@ npm install
 npm run dev
 ```
 
-Open the printed local URL. Pick a starter on the first screen, then move with
-**arrow keys or WASD**. Walking into darker "tall grass" or purple "cosmic
-field" tiles has a chance to trigger a random battle.
+Open the printed local URL. Browse the three starters' Dex entries and pick
+one (with a confirmation prompt), then move with **arrow keys or WASD**.
+Walking into darker "tall grass" or purple "cosmic field" tiles has a chance
+to trigger a random battle.
 
 `npm run build` produces a static production build in `dist/`.
 
@@ -26,11 +27,13 @@ src/
   main.js               Phaser game config, scene list
   scenes/
     BootScene.js         Generates placeholder textures, then starts starter select
-    StarterSelectScene.js Pick one of the three starters before entering the map
+    StarterSelectScene.js Paged Dex entries (real art) + choice confirmation
     OverworldScene.js     Tile map rendering, player movement, encounter checks
     BattleScene.js         Turn-based battle UI (HP bars, move menu, log)
   data/
     characters.json       Static roster data (stats @ level 12, ability, moves)
+  assets/
+    dex/                   Real Dex-entry portrait art, one file per character id
   systems/
     leveling.js            Stat-scaling formula (see below)
     typeChart.js            Type effectiveness + physical/special category-by-type
@@ -52,15 +55,21 @@ existing three. `ability.id` must match a key in `src/systems/abilities.js`
 effects (stat changes, confuse, etc.) use the `effects` array — see
 `Wotcher Wave` and `Camden Splash` for examples.
 
-## Swapping in real pixel art
+## Art status
 
-All sprites — the three starters and every tile — are placeholder colored
-squares generated at runtime from `src/systems/placeholderSprites.js`, keyed
-by the same string a real asset would use (a tile type name, or a character's
-`spriteKey`). The overworld avatar reuses the chosen starter's own texture.
-To use real art, load an image/spritesheet under that same key in a scene's
-`preload()` instead of calling the generator — nothing that *renders* the
-texture needs to change.
+- **Dex-entry portraits** (starter-select screen): real pixel art, one PNG
+  per character at `src/assets/dex/<id>.png` (transparent background). Drop a
+  new file there named after a character's `id` and its Dex entry picks it up
+  automatically — no code or data changes needed (see `StarterSelectScene.js`,
+  which resolves these via `import.meta.glob`). If a character has no file
+  yet, its entry falls back to the placeholder square.
+- **Overworld avatar and battle sprites**: still placeholder colored squares,
+  generated at runtime from `src/systems/placeholderSprites.js`, keyed by the
+  same string a real asset would use (a tile type name, or a character's
+  `spriteKey`). To swap in real art later, load an image/spritesheet under
+  that same key in a scene's `preload()` instead of calling the generator —
+  nothing that *renders* the texture needs to change. Battle art is planned
+  as a separate follow-up.
 
 ## Leveling
 
